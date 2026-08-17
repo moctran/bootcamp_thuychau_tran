@@ -1,27 +1,28 @@
-import sys, os
+import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()  # looks for a .env file in the current and parent directories
-print(".env loaded (if present)")
+# Absolute path to this file
+CONFIG_FILE = Path(__file__).resolve()
 
-PROJECT_ROOT = Path.cwd().parent
+# src/
+SRC_DIR = CONFIG_FILE.parent
+
+# project/
+PROJECT_ROOT = SRC_DIR.parent
+
+# project/.env
+load_dotenv(PROJECT_ROOT / ".env")
+
 DATA_DIR = PROJECT_ROOT / "data"
+RAW_DATA_DIR = DATA_DIR / "raw"
+PROCESSED_DATA_DIR = DATA_DIR / "processed"
+
+print("CONFIG_FILE:", CONFIG_FILE)
 print("PROJECT_ROOT:", PROJECT_ROOT)
 print("DATA_DIR:", DATA_DIR)
+print("RAW_DATA_DIR:", RAW_DATA_DIR)
+print("PROCESSED_DATA_DIR:", PROCESSED_DATA_DIR)
 
-def get_key(name, default=None):
-    return os.getenv(name, default)
-api_key_present = get_key("API_KEY") is not None
-print("API_KEY present:", api_key_present)
-
-data_dir_env = get_key("DATA_DIR", str(DATA_DIR))
-data_path = Path(data_dir_env)
-# If DATA_DIR from .env is relative, resolve it from PROJECT_ROOT
-if not data_path.is_absolute():
-    data_path = PROJECT_ROOT / data_path
-print("DATA_DIR from env:", data_path)
-
-# Ensure data directory exists (non-destructive)
-data_path.mkdir(parents=True, exist_ok=True)
-print("Ensured data directory exists.")
+RAW_DATA_DIR.mkdir(parents=True, exist_ok=True)
+PROCESSED_DATA_DIR.mkdir(parents=True, exist_ok=True)
